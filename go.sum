@@ -10,8 +10,12 @@ cloud.google.com/go/firestore v1.13.0 h1:/3S4RssUV4GO/kvgJZB+tayjhOfyAHs+KcpJgRV
 cloud.google.com/go/firestore v1.13.0/go.mod h1:QojqqOh8IntInDUSTAh0c8ZsPYAr68Ma8c5DWOy8xb8=
 cloud.google.com/go/iam v1.1.1 h1:lW7fzj15aVIXYHREOqjRBV9PsH0Z6u8Y46a1YGvQP4Y=
 cloud.google.com/go/iam v1.1.1/go.mod h1:A5avdyVL2tCppe4unb0951eI9jreack+RJ0/d+KUZOU=
+cloud.google.com/go/kms v1.15.0 h1:xYl5WEaSekKYN5gGRyhjvZKM22GVBBCzegGNVPy+aIs=
+cloud.google.com/go/kms v1.15.0/go.mod h1:c9J991h5DTl+kg7gi3MYomh12YEENGrf48ee/N/2CDM=
 cloud.google.com/go/longrunning v0.5.1 h1:Fr7TXftcqTudoyRJa113hyaqlGdiBQkp0Gq7tErFDWI=
 cloud.google.com/go/longrunning v0.5.1/go.mod h1:spvimkwdz6SPWKEt/XBij79E9fiTkHSQl/fRUUQJYJc=
+cloud.google.com/go/pubsub v1.33.0 h1:6SPCPvWav64tj0sVX/+npCBKhUi/UjJehy9op/V3p2g=
+cloud.google.com/go/pubsub v1.33.0/go.mod h1:f+w71I33OMyxf9VpMVcZbnG5KSUkCOUHYpFd5U1GdRc=
 cloud.google.com/go/secretmanager v1.11.2 h1:52Z78hH8NBWIqbvIG0wi0EoTaAmSx99KIOAmDXIlX0M=
 cloud.google.com/go/secretmanager v1.11.2/go.mod h1:MQm4t3deoSub7+WNwiC4/tRYgDBHJgJPvswqQVB1Vss=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -20,10 +24,14 @@ github.com/blueambertech/db v0.0.6 h1:d/TCpJTaZTFVpixRMyn6joGgSbHBdUc5hOCnP/MtzK
 github.com/blueambertech/db v0.0.6/go.mod h1:8X3MqnnjPRfwQlL/Zyn4toUEHEm2npUK9tFDqMwkK30=
 github.com/blueambertech/firestoredb v0.0.13 h1:tKvdWqWgX0lXsZBIhysxqJJd1YKpVLXkG9Lr+LpaSyg=
 github.com/blueambertech/firestoredb v0.0.13/go.mod h1:XFgqKZnbPZJarjUyaiqIhT3B/bjE5zpRf6NPiRSPtGI=
+github.com/blueambertech/googlepubsub v0.0.3 h1:VKsuuMjLClqA4DNRcJMLODcuEGBjNg1llPEwSF5IWfw=
+github.com/blueambertech/googlepubsub v0.0.3/go.mod h1:uqU/Y2lpR1t3Msu1KCIC1nB/AOpiaBBsSuPA9zovufk=
 github.com/blueambertech/googlesecret v0.0.2 h1:+woe3Z2uqYIZopslg7hwSHQOzVWCdE2jysbkzFEnYpk=
 github.com/blueambertech/googlesecret v0.0.2/go.mod h1:R0wVBEaqQMz3pDEz/Uqy6+FHAvkttfDntWqilSKTd4Y=
 github.com/blueambertech/logging v0.0.2 h1:DUxSpqF8hHGm0emSRuFSluvdnHPc9oHfjKLLrsy6xOY=
 github.com/blueambertech/logging v0.0.2/go.mod h1:idSH4NnkAyMY+sW0FKUL304tn7IoeTytomSUw3UtBQU=
+github.com/blueambertech/pubsub v0.0.4 h1:jTJ7SHOnkKfPibRXBZX7g0ttuYOfRvISHiPD0SdVeK8=
+github.com/blueambertech/pubsub v0.0.4/go.mod h1:bL0VsKZ6G1oVwrVZZKFIyA8WRS9Rp8FnE6i5l9WvbBo=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=

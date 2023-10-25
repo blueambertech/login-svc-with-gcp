@@ -5,8 +5,10 @@ go 1.21.1
 require (
 	github.com/blueambertech/db v0.0.6
 	github.com/blueambertech/firestoredb v0.0.13
+	github.com/blueambertech/googlepubsub v0.0.3
 	github.com/blueambertech/googlesecret v0.0.2
 	github.com/blueambertech/logging v0.0.2
+	github.com/blueambertech/pubsub v0.0.4
 	github.com/fatih/structs v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/mitchellh/mapstructure v1.5.0
@@ -22,6 +24,7 @@ require (
 	cloud.google.com/go/firestore v1.13.0 // indirect
 	cloud.google.com/go/iam v1.1.1 // indirect
 	cloud.google.com/go/longrunning v0.5.1 // indirect
+	cloud.google.com/go/pubsub v1.33.0 // indirect
 	cloud.google.com/go/secretmanager v1.11.2 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

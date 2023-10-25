@@ -10,3 +10,4 @@ It contains the following functionality:
 
 ## Future Development
 - Use the blueambertech/googlepubsub package to notify a message queue when a login is created
+- Add more comprehensive unit testing

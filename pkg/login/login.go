@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/blueambertech/db"
+	"github.com/blueambertech/pubsub"
 	"github.com/mitchellh/mapstructure"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,6 +19,7 @@ import (
 const (
 	hashIterations = 1000
 	collectionName = "details"
+	topicID        = "login-events"
 )
 
 type Details struct {
@@ -34,10 +36,16 @@ func (d *Details) String() string {
 }
 
 var dbClient db.NoSQLClient
+var loginNotificationHandler pubsub.Handler
 
 // SetNoSQLClient sets the NoSQL client to use to manage users
 func SetNoSQLClient(client db.NoSQLClient) {
 	dbClient = client
+}
+
+// SetNotificationQueue sets the queue handler to use for login notifications
+func SetNotificationQueue(handler pubsub.Handler) {
+	loginNotificationHandler = handler
 }
 
 // Validate takes a username and password and validates it against the details stored for this user in the login database
@@ -67,7 +75,12 @@ func AddLogin(ctx context.Context, userName, password string) error {
 		PassHash: hashPassword(password + salt),
 		Salt:     salt,
 	}
-	return dbClient.InsertWithID(ctx, collectionName, d.UserName, &d)
+	err = dbClient.InsertWithID(ctx, collectionName, d.UserName, &d)
+	if err != nil {
+		return err
+	}
+	// TODO: this isn't really a fail, in future add logging and return success
+	return loginNotificationHandler.Push(ctx, topicID, "created login: "+userName)
 }
 
 func hashPassword(pw string) string {

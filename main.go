@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/blueambertech/firestoredb"
+	"github.com/blueambertech/googlepubsub"
 	"github.com/blueambertech/logging"
 	"github.com/blueambertech/login-svc-with-gcp/api"
 	"github.com/blueambertech/login-svc-with-gcp/data"
@@ -36,6 +37,12 @@ func main() {
 		log.Fatal(err)
 	}
 	login.SetNoSQLClient(db)
+
+	pubsub, err := googlepubsub.New(bgCtx, data.ProjectID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	login.SetNotificationQueue(pubsub)
 
 	api.SetupHandlers()
 
