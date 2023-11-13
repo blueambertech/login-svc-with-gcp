@@ -8,9 +8,12 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/blueambertech/db"
+	"github.com/blueambertech/httpauth"
 	"github.com/blueambertech/logging"
-	"github.com/blueambertech/login-svc-with-gcp/pkg/auth"
 	"github.com/blueambertech/login-svc-with-gcp/pkg/login"
+	"github.com/blueambertech/pubsub"
+	"github.com/blueambertech/secretmanager"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -20,18 +23,26 @@ type LoginFormDetails struct {
 	Password string `json:"password"`
 }
 
-var ShutdownChannel chan os.Signal = make(chan os.Signal, 1)
+var (
+	ShutdownChannel chan os.Signal = make(chan os.Signal, 1)
+	secrets         secretmanager.SecretManager
+	dbClient        db.NoSQLClient
+	events          pubsub.Handler
+)
 
 // SetupHandlers sets up the http handlers for the required endpoints in this service using the default serve mux
-func SetupHandlers() {
-	http.HandleFunc("/shutdown", ShutdownHandler)
+func SetupHandlers(sm secretmanager.SecretManager, db db.NoSQLClient, eq pubsub.Handler) {
+	secrets = sm
+	dbClient = db
+	events = eq
 	http.HandleFunc("/health", HealthHandler)
 	http.HandleFunc("/login/add", AddLoginHandler)
 	http.HandleFunc("/login", LoginHandler)
-	http.Handle("/testauth", auth.Authorize(http.HandlerFunc(TestAuthHandler))) // Use auth middleware here to authorize the user
+	http.Handle("/shutdown", httpauth.Authorize(http.HandlerFunc(ShutdownHandler), secrets))
+	http.Handle("/testauth", httpauth.Authorize(http.HandlerFunc(TestAuthHandler), secrets))
 }
 
-// ShutdownHandler is a http handler that will gracefully shut the service down (in a real world environment this would require some authorisation)
+// ShutdownHandler is a http handler that will gracefully shut the service down
 func ShutdownHandler(w http.ResponseWriter, r *http.Request) {
 	_, span := logging.Tracer.Start(r.Context(), "shutdown-span")
 	defer span.End()
@@ -62,7 +73,7 @@ func AddLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = login.AddLogin(r.Context(), form.Username, form.Password)
+	err = login.AddLogin(r.Context(), dbClient, events, form.Username, form.Password, span)
 	if err != nil {
 		httpError(w, "failed to add login", http.StatusBadRequest, span, err)
 		return
@@ -86,7 +97,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validCreds, err := login.Validate(r.Context(), form.Username, form.Password)
+	validCreds, _, err := login.Validate(r.Context(), dbClient, form.Username, form.Password)
 	if err != nil {
 		httpError(w, "failed to validate", http.StatusInternalServerError, span, err)
 		return
@@ -95,7 +106,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	token, err := auth.CreateJWT(r.Context(), form.Username)
+	claims := map[string]interface{}{
+		"exp": httpauth.StandardTokenLife,
+	}
+	token, err := httpauth.CreateJWTWithClaims(r.Context(), secrets, claims)
 	if err != nil {
 		httpError(w, "failed to create token", http.StatusInternalServerError, span, err)
 		return
@@ -103,8 +117,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(token))
 }
 
-// TestAuthHandler is an example http handler that can be used to test requests are being authenticated correctly, it will be initialised using
-// the auth middleware and should return the 200 OK status only if the JWT on the Authorization header is valid
+// TestAuthHandler is an example http handler that can be used to test requests are being authenticated correctly, it should be initialised using
+// the auth middleware which will return the 200 OK status only if the JWT on the Authorization header is valid
 func TestAuthHandler(w http.ResponseWriter, r *http.Request) {
 	_, span := logging.Tracer.Start(r.Context(), "test-auth-span")
 	defer span.End()

@@ -12,10 +12,10 @@ import (
 
 	"github.com/blueambertech/firestoredb"
 	"github.com/blueambertech/googlepubsub"
+	"github.com/blueambertech/googlesecret"
 	"github.com/blueambertech/logging"
 	"github.com/blueambertech/login-svc-with-gcp/api"
 	"github.com/blueambertech/login-svc-with-gcp/data"
-	"github.com/blueambertech/login-svc-with-gcp/pkg/login"
 )
 
 const dbName = "<GCP Firestore Database Name here>"
@@ -23,28 +23,27 @@ const dbName = "<GCP Firestore Database Name here>"
 func main() {
 	bgCtx := context.Background()
 	logging.Setup(bgCtx, data.ServiceName)
+	defer logging.DeferredCleanup(bgCtx)
 
 	port := os.Getenv("PORT") // PORT set by GCP when running in their serverless environment
 	if port == "" {
-		port = "8081"
+		port = "8080"
 	}
 	server := &http.Server{
 		Addr: ":" + port,
 	}
 
-	db, err := firestoredb.NewFirestore(data.ProjectID, dbName)
+	dbClient, err := firestoredb.New(data.ProjectID, dbName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	login.SetNoSQLClient(db)
-
 	pubsub, err := googlepubsub.New(bgCtx, data.ProjectID)
 	if err != nil {
 		log.Fatal(err)
 	}
-	login.SetNotificationQueue(pubsub)
+	secrets := googlesecret.NewManager(data.ProjectID)
 
-	api.SetupHandlers()
+	api.SetupHandlers(secrets, dbClient, pubsub)
 
 	go func() {
 		log.Println("Service started")
